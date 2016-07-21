@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#define rand_r rand
+#endif
+
 unsigned int data_seed;
 
 list *get_paths(char *filename)

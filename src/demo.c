@@ -6,7 +6,12 @@
 #include "box.h"
 #include "image.h"
 #include "demo.h"
+
+#ifdef _WIN32
+#include <time.h>
+#else
 #include <sys/time.h>
+#endif
 
 #define FRAMES 3
 
