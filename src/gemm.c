@@ -5,6 +5,11 @@
 #include <stdio.h>
 #include <math.h>
 
+#ifdef _WIN32
+#include "xmmintrin.h"
+#define is_aligned(POINTER, BYTE_COUNT)	(((uintptr_t)(const void *)(POINTER)) % (BYTE_COUNT) == 0)
+#endif
+
 void gemm_bin(int M, int N, int K, float ALPHA, 
         char  *A, int lda, 
         float *B, int ldb,
@@ -76,6 +81,7 @@ void gemm_nn(int M, int N, int K, float ALPHA,
         float *B, int ldb,
         float *C, int ldc)
 {
+#ifndef _WIN32
     int i,j,k;
     for(i = 0; i < M; ++i){
         for(k = 0; k < K; ++k){
@@ -85,6 +91,36 @@ void gemm_nn(int M, int N, int K, float ALPHA,
             }
         }
     }
+#else
+	int i, j, k;
+	for (i = 0; i < M; ++i){
+		for (k = 0; k < K; ++k){
+			float A_PART = ALPHA*A[i*lda + k];
+			float *ptrB = B + k*ldb;
+			float *ptrC = C + i*ldc;
+
+			int alignedN = 0;
+			if (is_aligned(ptrB, 16) && is_aligned(ptrC, 16))
+			{
+				alignedN = (N >> 2) << 2;
+				for (j = 0; j < alignedN; j += 4){
+					__m128 as = _mm_set_ps1(A_PART);
+					__m128 bs = _mm_load_ps(ptrB + j);
+					__m128 cs1 = _mm_mul_ps(as, bs);
+
+					__m128 cs0 = _mm_load_ps(ptrC + j);
+					cs0 = _mm_add_ps(cs0, cs1);
+
+					_mm_store_ps(ptrC + j, cs0);
+				}
+			}
+
+			for (j = alignedN; j < N; ++j){
+				ptrC[j] += A_PART*ptrB[j];
+			}
+		}
+	}
+#endif
 }
 
 void gemm_nt(int M, int N, int K, float ALPHA, 
