@@ -6,6 +6,8 @@
 #include "box.h"
 #include "demo.h"
 
+#include "yolo_.h"
+
 #ifdef OPENCV
 #include "opencv2/highgui/highgui_c.h"
 #endif
@@ -19,8 +21,8 @@ image voc_labels[20];
 
 void train_yolo(char *cfgfile, char *weightfile)
 {
-    char *train_images = "/data/voc/train.txt";
-    char *backup_directory = "/home/pjreddie/backup/";
+    char *train_images = "D:/dataset/voc/train.txt";
+    char *backup_directory = "D:/dataset/voc/backup/";
     srand(time(0));
     data_seed = time(0);
     char *base = basecfg(cfgfile);
@@ -347,9 +349,9 @@ void test_yolo(char *cfgfile, char *weightfile, char *filename, float thresh)
         time=clock();
         float *predictions = network_predict(net, X);
         printf("%s: Predicted in %f seconds.\n", input, sec(clock()-time));
+
         convert_detections(predictions, l.classes, l.n, l.sqrt, l.side, 1, 1, thresh, probs, boxes, 0);
         if (nms) do_nms_sort(boxes, probs, l.side*l.side*l.n, l.classes, nms);
-        //draw_detections(im, l.side*l.side*l.n, thresh, boxes, probs, voc_names, voc_labels, 20);
         draw_detections(im, l.side*l.side*l.n, thresh, boxes, probs, voc_names, voc_labels, 20);
         save_image(im, "predictions");
         show_image(im, "predictions");
@@ -365,12 +367,12 @@ void test_yolo(char *cfgfile, char *weightfile, char *filename, float thresh)
     }
 }
 
-void run_yolo(int argc, char **argv)
+void run_yolo2(int argc, char **argv)
 {
     int i;
     for(i = 0; i < 20; ++i){
         char buff[256];
-        sprintf(buff, "data/labels/%s.png", voc_names[i]);
+        sprintf(buff, "../../data/labels/%s.png", voc_names[i]);
         voc_labels[i] = load_image_color(buff, 0, 0);
     }
 
@@ -390,4 +392,22 @@ void run_yolo(int argc, char **argv)
     else if(0==strcmp(argv[2], "valid")) validate_yolo(cfg, weights);
     else if(0==strcmp(argv[2], "recall")) validate_yolo_recall(cfg, weights);
     else if(0==strcmp(argv[2], "demo")) demo(cfg, weights, thresh, cam_index, filename, voc_names, voc_labels, 20, frame_skip);
+}
+
+void run_yolo(int argc, char **argv)
+{
+	const char* cfgfile = argv[3];
+	char *weights = (argc > 4) ? argv[4] : 0;
+	char *filename = (argc > 5) ? argv[5] : 0;
+
+	context_param_yolo_t ctx;
+	yoloPredictions predictions;
+
+	createYoloNetwork(&ctx, cfgfile, weights);
+
+	yoloPredict(&ctx, filename, 0.2, &predictions);
+	yoloPredict(&ctx, filename, 0.2, &predictions);
+	yoloPredict(&ctx, filename, 0.2, &predictions);
+
+	destroyYoloNetwork(&ctx);
 }
