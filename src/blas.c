@@ -1,6 +1,50 @@
 #include "blas.h"
 #include "math.h"
 #include <assert.h>
+#include <float.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+void reorg_cpu(float *x, int w, int h, int c, int batch, int stride, int forward, float *out)
+{
+    int b,i,j,k;
+    int out_c = c/(stride*stride);
+
+    for(b = 0; b < batch; ++b){
+        for(k = 0; k < c; ++k){
+            for(j = 0; j < h; ++j){
+                for(i = 0; i < w; ++i){
+                    int in_index  = i + w*(j + h*(k + c*b));
+                    int c2 = k % out_c;
+                    int offset = k / out_c;
+                    int w2 = i*stride + offset % stride;
+                    int h2 = j*stride + offset / stride;
+                    int out_index = w2 + w*stride*(h2 + h*stride*(c2 + out_c*b));
+                    if(forward) out[out_index] = x[in_index];
+                    else out[in_index] = x[out_index];
+                }
+            }
+        }
+    }
+}
+
+void flatten(float *x, int size, int layers, int batch, int forward)
+{
+    float *swap = calloc(size*layers*batch, sizeof(float));
+    int i,c,b;
+    for(b = 0; b < batch; ++b){
+        for(c = 0; c < layers; ++c){
+            for(i = 0; i < size; ++i){
+                int i1 = b*layers*size + c*size + i;
+                int i2 = b*layers*size + i*layers + c;
+                if (forward) swap[i2] = x[i1];
+                else swap[i1] = x[i2];
+            }
+        }
+    }
+    memcpy(x, swap, size*layers*batch*sizeof(float));
+    free(swap);
+}
 
 void weighted_sum_cpu(float *a, float *b, float *s, int n, float *c)
 {
@@ -135,8 +179,18 @@ void smooth_l1_cpu(int n, float *pred, float *truth, float *delta, float *error)
         }
         else {
             error[i] = 2*abs_val - 1;
-            delta[i] = (diff < 0) ? -1 : 1;
+            delta[i] = (diff < 0) ? 1 : -1;
         }
+    }
+}
+
+void l1_cpu(int n, float *pred, float *truth, float *delta, float *error)
+{
+    int i;
+    for(i = 0; i < n; ++i){
+        float diff = truth[i] - pred[i];
+        error[i] = fabs(diff);
+        delta[i] = diff > 0 ? 1 : -1;
     }
 }
 
@@ -156,5 +210,34 @@ float dot_cpu(int N, float *X, int INCX, float *Y, int INCY)
     float dot = 0;
     for(i = 0; i < N; ++i) dot += X[i*INCX] * Y[i*INCY];
     return dot;
+}
+
+void softmax(float *input, int n, float temp, int stride, float *output)
+{
+    int i;
+    float sum = 0;
+    float largest = -FLT_MAX;
+    for(i = 0; i < n; ++i){
+        if(input[i*stride] > largest) largest = input[i*stride];
+    }
+    for(i = 0; i < n; ++i){
+        float e = exp(input[i*stride]/temp - largest/temp);
+        sum += e;
+        output[i*stride] = e;
+    }
+    for(i = 0; i < n; ++i){
+        output[i*stride] /= sum;
+    }
+}
+
+
+void softmax_cpu(float *input, int n, int batch, int batch_offset, int groups, int group_offset, int stride, float temp, float *output)
+{
+    int g, b;
+    for(b = 0; b < batch; ++b){
+        for(g = 0; g < groups; ++g){
+            softmax(input + b*batch_offset + g*group_offset, n, temp, stride, output + b*batch_offset + g*group_offset);
+        }
+    }
 }
 

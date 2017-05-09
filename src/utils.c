@@ -14,6 +14,44 @@
 
 #include "utils.h"
 
+int *read_intlist(char *gpu_list, int *ngpus, int d)
+{
+    int *gpus = 0;
+    if(gpu_list){
+        int len = strlen(gpu_list);
+        *ngpus = 1;
+        int i;
+        for(i = 0; i < len; ++i){
+            if (gpu_list[i] == ',') ++*ngpus;
+        }
+        gpus = calloc(*ngpus, sizeof(int));
+        for(i = 0; i < *ngpus; ++i){
+            gpus[i] = atoi(gpu_list);
+            gpu_list = strchr(gpu_list, ',')+1;
+        }
+    } else {
+        gpus = calloc(1, sizeof(float));
+        *gpus = d;
+        *ngpus = 1;
+    }
+    return gpus;
+}
+
+int *read_map(char *filename)
+{
+    int n = 0;
+    int *map = 0;
+    char *str;
+    FILE *file = fopen(filename, "r");
+    if(!file) file_error(filename);
+    while((str=fgetl(file))){
+        ++n;
+        map = realloc(map, n*sizeof(int));
+        map[n-1] = atoi(str);
+    }
+    return map;
+}
+
 void sorta_shuffle(void *arr, size_t n, size_t size, size_t sections)
 {
     size_t i;
@@ -151,23 +189,20 @@ void pm(int M, int N, float *A)
     printf("\n");
 }
 
-char *find_replace(char *str, char *orig, char *rep)
+void find_replace(char *str, char *orig, char *rep, char *output)
 {
-    static char buffer[4096];
-    static char buffer2[4096];
-    static char buffer3[4096];
+    char buffer[4096] = {0};
     char *p;
 
-    if(!(p = strstr(str, orig)))  // Is 'orig' even in 'str'?
-        return str;
+    sprintf(buffer, "%s", str);
+    if(!(p = strstr(buffer, orig))){  // Is 'orig' even in 'str'?
+        sprintf(output, "%s", str);
+        return;
+    }
 
-    strncpy(buffer2, str, p-str); // Copy characters from 'str' start to 'orig' st$
-    buffer2[p-str] = '\0';
+    *p = '\0';
 
-    sprintf(buffer3, "%s%s%s", buffer2, rep, p+strlen(orig));
-    sprintf(buffer, "%s", buffer3);
-
-    return buffer;
+    sprintf(output, "%s%s%s", buffer, rep, p+strlen(orig));
 }
 
 float sec(clock_t clocks)
@@ -430,6 +465,13 @@ void mean_arrays(float **a, int n, int els, float *avg)
     }
 }
 
+void print_statistics(float *a, int n)
+{
+    float m = mean_array(a, n);
+    float v = variance_array(a, n);
+    printf("MSE: %.6f, Mean: %.6f, Variance: %.6f\n", mse_array(a, n), m, v);
+}
+
 float variance_array(float *a, int n)
 {
     int i;
@@ -537,12 +579,16 @@ int max_index(float *a, int n)
 
 int rand_int(int min, int max)
 {
+    if (max < min){
+        int s = min;
+        min = max;
+        max = s;
+    }
     int r = (rand()%(max - min + 1)) + min;
     return r;
 }
 
 // From http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
-#define TWO_PI 6.2831853071795864769252866
 float rand_normal()
 {
     static int haveSpare = 0;
@@ -589,7 +635,19 @@ size_t rand_size_t()
 
 float rand_uniform(float min, float max)
 {
+    if(max < min){
+        float swap = min;
+        min = max;
+        max = swap;
+    }
     return ((float)rand()/RAND_MAX * (max - min)) + min;
+}
+
+float rand_scale(float s)
+{
+    float scale = rand_uniform(1, s);
+    if(rand()%2) return scale;
+    return 1./scale;
 }
 
 float **one_hot_encode(float *a, int n, int k)

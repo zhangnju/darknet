@@ -4,10 +4,6 @@
 #include "blas.h"
 #include "parser.h"
 
-#ifdef OPENCV
-#include "opencv2/highgui/highgui_c.h"
-#endif
-
 typedef struct {
     float *x;
     float *y;
@@ -129,7 +125,6 @@ void reset_rnn_state(network net, int b)
 void train_char_rnn(char *cfgfile, char *weightfile, char *filename, int clear, int tokenized)
 {
     srand(time(0));
-    data_seed = time(0);
     unsigned char *text = 0;
     int *tokens = 0;
     size_t size;
@@ -156,7 +151,7 @@ void train_char_rnn(char *cfgfile, char *weightfile, char *filename, int clear, 
         load_weights(&net, weightfile);
     }
 
-    int inputs = get_network_input_size(net);
+    int inputs = net.inputs;
     fprintf(stderr, "Learning Rate: %g, Momentum: %g, Decay: %g\n", net.learning_rate, net.momentum, net.decay);
     int batch = net.batch;
     int steps = net.time_steps;
@@ -181,7 +176,9 @@ void train_char_rnn(char *cfgfile, char *weightfile, char *filename, int clear, 
             p = get_rnn_data(text, offsets, inputs, size, streams, steps);
         }
 
-        float loss = train_network_datum(net, p.x, p.y) / (batch);
+        memcpy(net.input, p.x, net.inputs*net.batch);
+        memcpy(net.truth, p.y, net.truths*net.batch);
+        float loss = train_network_datum(net) / (batch);
         free(p.x);
         free(p.y);
         if (avg_loss < 0) avg_loss = loss;
@@ -239,7 +236,7 @@ void test_char_rnn(char *cfgfile, char *weightfile, int num, char *seed, float t
     if(weightfile){
         load_weights(&net, weightfile);
     }
-    int inputs = get_network_input_size(net);
+    int inputs = net.inputs;
 
     int i, j;
     for(i = 0; i < net.n; ++i) net.layers[i].temperature = temp;
@@ -296,7 +293,7 @@ void test_tactic_rnn(char *cfgfile, char *weightfile, int num, float temp, int r
     if(weightfile){
         load_weights(&net, weightfile);
     }
-    int inputs = get_network_input_size(net);
+    int inputs = net.inputs;
 
     int i, j;
     for(i = 0; i < net.n; ++i) net.layers[i].temperature = temp;
@@ -334,7 +331,7 @@ void valid_tactic_rnn(char *cfgfile, char *weightfile, char *seed)
     if(weightfile){
         load_weights(&net, weightfile);
     }
-    int inputs = get_network_input_size(net);
+    int inputs = net.inputs;
 
     int count = 0;
     int words = 1;
@@ -386,7 +383,7 @@ void valid_char_rnn(char *cfgfile, char *weightfile, char *seed)
     if(weightfile){
         load_weights(&net, weightfile);
     }
-    int inputs = get_network_input_size(net);
+    int inputs = net.inputs;
 
     int count = 0;
     int words = 1;
@@ -427,7 +424,7 @@ void vec_char_rnn(char *cfgfile, char *weightfile, char *seed)
     if(weightfile){
         load_weights(&net, weightfile);
     }
-    int inputs = get_network_input_size(net);
+    int inputs = net.inputs;
 
     int c;
     int seed_len = strlen(seed);
