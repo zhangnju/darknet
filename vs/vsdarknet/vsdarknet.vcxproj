@@ -214,7 +214,6 @@
     <ClCompile Include="..\..\src\gru_layer.c" />
     <ClCompile Include="..\..\src\im2col.c" />
     <ClCompile Include="..\..\src\image.c" />
-    <ClCompile Include="..\..\src\imagenet.c" />
     <ClCompile Include="..\..\src\layer.c" />
     <ClCompile Include="..\..\src\list.c" />
     <ClCompile Include="..\..\src\local_layer.c" />
@@ -225,6 +224,9 @@
     <ClCompile Include="..\..\src\normalization_layer.c" />
     <ClCompile Include="..\..\src\option_list.c" />
     <ClCompile Include="..\..\src\parser.c" />
+    <ClCompile Include="..\..\src\region_layer.c" />
+    <ClCompile Include="..\..\src\regressor.c" />
+    <ClCompile Include="..\..\src\reorg_layer.c" />
     <ClCompile Include="..\..\src\rnn.c" />
     <ClCompile Include="..\..\src\rnn_layer.c" />
     <ClCompile Include="..\..\src\rnn_vid.c" />
@@ -233,6 +235,7 @@
     <ClCompile Include="..\..\src\softmax_layer.c" />
     <ClCompile Include="..\..\src\swag.c" />
     <ClCompile Include="..\..\src\tag.c" />
+    <ClCompile Include="..\..\src\tree.c" />
     <ClCompile Include="..\..\src\utils.c" />
     <ClCompile Include="..\..\src\writing.c" />
     <ClCompile Include="..\..\src\yolo.c" />
@@ -271,12 +274,15 @@
     <ClInclude Include="..\..\src\normalization_layer.h" />
     <ClInclude Include="..\..\src\option_list.h" />
     <ClInclude Include="..\..\src\parser.h" />
+    <ClInclude Include="..\..\src\region_layer.h" />
+    <ClInclude Include="..\..\src\reorg_layer.h" />
     <ClInclude Include="..\..\src\rnn_layer.h" />
     <ClInclude Include="..\..\src\route_layer.h" />
     <ClInclude Include="..\..\src\shortcut_layer.h" />
     <ClInclude Include="..\..\src\softmax_layer.h" />
     <ClInclude Include="..\..\src\stb_image.h" />
     <ClInclude Include="..\..\src\stb_image_write.h" />
+    <ClInclude Include="..\..\src\tree.h" />
     <ClInclude Include="..\..\src\utils.h" />
     <ClInclude Include="yolo_.h" />
   </ItemGroup>

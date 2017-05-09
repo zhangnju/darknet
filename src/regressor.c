@@ -5,7 +5,7 @@
 #include "blas.h"
 #include "assert.h"
 #include "cuda.h"
-#include <sys/time.h>
+//#include <sys/time.h>
 
 void train_regressor(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear)
 {

@@ -4,7 +4,7 @@
 #include "option_list.h"
 #include "blas.h"
 #include "data.h"
-#include <unistd.h>
+//#include <unistd.h>
 
 int inverted = 1;
 int noi = 1;
