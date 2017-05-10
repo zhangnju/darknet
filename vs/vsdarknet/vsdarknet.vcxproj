@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\src\deconvolutional_layer.c" />
     <ClCompile Include="..\..\src\demo.c" />
     <ClCompile Include="..\..\src\detection_layer.c" />
+    <ClCompile Include="..\..\src\detector.c" />
     <ClCompile Include="..\..\src\dice.c" />
     <ClCompile Include="..\..\src\dropout_layer.c" />
     <ClCompile Include="..\..\src\gemm.c" />
@@ -217,6 +218,7 @@
     <ClCompile Include="..\..\src\layer.c" />
     <ClCompile Include="..\..\src\list.c" />
     <ClCompile Include="..\..\src\local_layer.c" />
+    <ClCompile Include="..\..\src\lsd.c" />
     <ClCompile Include="..\..\src\matrix.c" />
     <ClCompile Include="..\..\src\maxpool_layer.c" />
     <ClCompile Include="..\..\src\network.c" />
@@ -233,10 +235,12 @@
     <ClCompile Include="..\..\src\route_layer.c" />
     <ClCompile Include="..\..\src\shortcut_layer.c" />
     <ClCompile Include="..\..\src\softmax_layer.c" />
+    <ClCompile Include="..\..\src\super.c" />
     <ClCompile Include="..\..\src\swag.c" />
     <ClCompile Include="..\..\src\tag.c" />
     <ClCompile Include="..\..\src\tree.c" />
     <ClCompile Include="..\..\src\utils.c" />
+    <ClCompile Include="..\..\src\voxel.c" />
     <ClCompile Include="..\..\src\writing.c" />
     <ClCompile Include="..\..\src\yolo.c" />
     <ClCompile Include="yolo_.c" />

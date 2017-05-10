@@ -278,13 +278,13 @@ void validate_detector_flip(char *datacfg, char *cfgfile, char *weightfile, char
     int imagenet = 0;
     if(0==strcmp(type, "coco")){
         if(!outfile) outfile = "coco_results";
-        snprintf(buff, 1024, "%s/%s.json", prefix, outfile);
+        sprintf_s(buff, 1024, "%s/%s.json", prefix, outfile);
         fp = fopen(buff, "w");
         fprintf(fp, "[\n");
         coco = 1;
     } else if(0==strcmp(type, "imagenet")){
         if(!outfile) outfile = "imagenet-detection";
-        snprintf(buff, 1024, "%s/%s.txt", prefix, outfile);
+		sprintf_s(buff, 1024, "%s/%s.txt", prefix, outfile);
         fp = fopen(buff, "w");
         imagenet = 1;
         classes = 200;
@@ -292,7 +292,7 @@ void validate_detector_flip(char *datacfg, char *cfgfile, char *weightfile, char
         if(!outfile) outfile = "comp4_det_test_";
         fps = calloc(classes, sizeof(FILE *));
         for(j = 0; j < classes; ++j){
-            snprintf(buff, 1024, "%s/%s%s.txt", prefix, outfile, names[j]);
+			sprintf_s(buff, 1024, "%s/%s%s.txt", prefix, outfile, names[j]);
             fps[j] = fopen(buff, "w");
         }
     }
@@ -414,13 +414,13 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
     int imagenet = 0;
     if(0==strcmp(type, "coco")){
         if(!outfile) outfile = "coco_results";
-        snprintf(buff, 1024, "%s/%s.json", prefix, outfile);
+        sprintf_s(buff, 1024, "%s/%s.json", prefix, outfile);
         fp = fopen(buff, "w");
         fprintf(fp, "[\n");
         coco = 1;
     } else if(0==strcmp(type, "imagenet")){
         if(!outfile) outfile = "imagenet-detection";
-        snprintf(buff, 1024, "%s/%s.txt", prefix, outfile);
+        sprintf_s(buff, 1024, "%s/%s.txt", prefix, outfile);
         fp = fopen(buff, "w");
         imagenet = 1;
         classes = 200;
@@ -428,7 +428,7 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
         if(!outfile) outfile = "comp4_det_test_";
         fps = calloc(classes, sizeof(FILE *));
         for(j = 0; j < classes; ++j){
-            snprintf(buff, 1024, "%s/%s%s.txt", prefix, outfile, names[j]);
+            sprintf_s(buff, 1024, "%s/%s%s.txt", prefix, outfile, names[j]);
             fps[j] = fopen(buff, "w");
         }
     }

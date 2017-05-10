@@ -4,7 +4,12 @@
 #include "option_list.h"
 #include "blas.h"
 #include "data.h"
-//#include <unistd.h>
+#ifdef _WIN32
+   #include<Windows.h>
+#else
+   #include <unistd.h>
+#endif
+
 
 int inverted = 1;
 int noi = 1;
@@ -828,7 +833,12 @@ void self_go(char *filename, char *weightfile, char *f2, char *w2, int multi)
             else ++p2;
             ++total;
             fprintf(stderr, "Total: %d, Player 1: %f, Player 2: %f\n", total, (float)p1/total, (float)p2/total);
-            sleep(1);
+#ifdef _WIN32
+			Sleep(1);
+#else
+			sleep(1);
+#endif
+            
             /*
             int i = (score > 0)? 0 : 1;
             int j;
