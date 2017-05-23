@@ -52,7 +52,6 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.5.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -86,24 +85,19 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>-Dinline=__inline %(AdditionalOptions) </AdditionalOptions>
+      <AdditionalOptions>-Dinline=__inline %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\src;..\..\3rdparty\pthread\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\3rdparty\pthread\lib\x86;cudart.lib;cudnn.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\3rdparty\pthread\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>-Dsnprintf=_snprintf %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d  "$(ProjectDir)..\..\3rdparty\pthread\dll\x86\*.dll" "$(OutDir)"</Command>
-      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
-    <CudaCompile>
-      <CodeGeneration>$(CudaArchitecture)</CodeGeneration>
-    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -119,16 +113,11 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\3rdparty\pthread\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pthreadVC2.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d  "$(ProjectDir)..\..\3rdparty\pthread\dll\x64\*.dll" "$(OutDir)"</Command>
-      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
-    <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -148,12 +137,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\3rdparty\pthread\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pthreadVC2.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d  "$(ProjectDir)..\..\3rdparty\pthread\dll\x86\*.dll" "$(OutDir)"</Command>
-      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -174,30 +161,26 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\3rdparty\pthread\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pthreadVC2.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d  "$(ProjectDir)..\..\3rdparty\pthread\dll\x64\*.dll" "$(OutDir)"</Command>
-      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
-    <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="..\..\src\activation_kernels.cu" />
-    <CudaCompile Include="..\..\src\avgpool_layer_kernels.cu" />
-    <CudaCompile Include="..\..\src\blas_kernels.cu" />
-    <CudaCompile Include="..\..\src\col2im_kernels.cu" />
-    <CudaCompile Include="..\..\src\convolutional_kernels.cu" />
-    <CudaCompile Include="..\..\src\crop_layer_kernels.cu" />
-    <CudaCompile Include="..\..\src\deconvolutional_kernels.cu" />
-    <CudaCompile Include="..\..\src\dropout_layer_kernels.cu" />
-    <CudaCompile Include="..\..\src\im2col_kernels.cu" />
-    <CudaCompile Include="..\..\src\maxpool_layer_kernels.cu" />
-    <CudaCompile Include="..\..\src\network_kernels.cu" />
-    <CudaCompile Include="..\..\src\softmax_layer_kernels.cu" />
+    <None Include="..\..\src\activation_kernels.cu" />
+    <None Include="..\..\src\avgpool_layer_kernels.cu" />
+    <None Include="..\..\src\blas_kernels.cu" />
+    <None Include="..\..\src\col2im_kernels.cu" />
+    <None Include="..\..\src\convolutional_kernels.cu" />
+    <None Include="..\..\src\crop_layer_kernels.cu" />
+    <None Include="..\..\src\deconvolutional_kernels.cu" />
+    <None Include="..\..\src\dropout_layer_kernels.cu" />
+    <None Include="..\..\src\im2col_kernels.cu" />
+    <None Include="..\..\src\maxpool_layer_kernels.cu" />
+    <None Include="..\..\src\network_kernels.cu" />
+    <None Include="..\..\src\softmax_layer_kernels.cu" />
+    <None Include="..\..\src\yolo_kernels.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\activations.c" />
@@ -309,6 +292,5 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.5.targets" />
   </ImportGroup>
 </Project>
